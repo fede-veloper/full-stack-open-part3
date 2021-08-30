@@ -8,23 +8,15 @@
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/fede-veloper/Ful-stack-open-part3.git"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/fede-veloper/Ful-stack-open-part3/issues"
-  },
-  "homepage": "https://github.com/fede-veloper/Ful-stack-open-part3#readme",
   "devDependencies": {
-    "morgan": "^1.10.0",
     "nodemon": "^2.0.12"
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "morgan": "^1.10.0"
   }
 }
