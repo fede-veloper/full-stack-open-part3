@@ -1,10 +1,13 @@
 const express = require('express');
+const cors = require('cors');
 const morgan = require('morgan');
 
 const app = express();
 const PORT = 3001;
 
 app.use(express.json());
+app.use(cors());
+app.use(express.static('build'));
 app.use(morgan(':method :url :status ms - :response-time :body'));
 
 let persons = [
@@ -56,7 +59,7 @@ app.delete('/api/persons/:id', (req, res) => {
   if (!person)
     return res.status(404).end();
   persons = persons.filter(person => person.id !== id);
-  res.status(204).end();
+  res.send(person);
 });
 
 app.post('/api/persons', (req, res) => {
@@ -75,7 +78,7 @@ app.post('/api/persons', (req, res) => {
   }
 
   persons = persons.concat(person);
-  res.status(200).end();
+  res.send(person);
 });
 
 app.listen(PORT, () => {
