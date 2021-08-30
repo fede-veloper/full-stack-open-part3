@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/fede-veloper/Ful-stack-open-part3#readme",
   "devDependencies": {
+    "morgan": "^1.10.0",
     "nodemon": "^2.0.12"
   },
   "dependencies": {
