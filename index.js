@@ -1,6 +1,10 @@
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+const Person = require('./models/person');
+const person = require('./models/person');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -36,16 +40,14 @@ let persons = [
 morgan.token('body', (req, res) => JSON.stringify(req.body));
 
 app.get('/api/persons', (req, res) => {
-    res.json(persons);
+  Person.find({})
+    .then(persons => res.json(persons));
 });
 
 app.get('/api/persons/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  const person = persons.find(person => person.id === id);
-
-  if (!person)
-    return res.status(404).end();
-  res.json(person);
+  Person.findById(req.params.id)
+    .then(person => res.json(person))
+    .catch(error => console.log('error ' + error));
 });
 
 app.get('/info', (req, res) => {
@@ -64,22 +66,27 @@ app.delete('/api/persons/:id', (req, res) => {
 
 app.post('/api/persons', (req, res) => {
   const body = req.body;
-  const personExists = persons.find(person => person.name === body.name);
+  // const personExists = persons.find(person => person.name === body.name);
 
   if (!body.name || !body.number) 
     return res.status(400).json({error: 'no empty fields'});
-  if(personExists) 
-    return res.status(400).json({error: 'name must be unique'});
+  /* if(personExists) 
+    return res.status(400).json({error: 'name must be unique'}); */
 
-  const person = {
+  const person = new Person({
     name: body.name, 
-    number: body.number,
-    id: parseInt(Math.random() * 1000)
-  }
+    number: body.number
+  });
 
-  persons = persons.concat(person);
+  person.save().then(result => console.log('person ' + result.name + ' saved in MongoDB'));
   res.send(person);
 });
+
+const unkownEntry = (req, res) => {
+  res.status(400).send({ error: "unknown endpoint" });
+}
+
+app.use(unkownEntry);
 
 app.listen(PORT, () => {
   console.log('Server running');
