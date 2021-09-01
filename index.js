@@ -1,8 +1,11 @@
-require('dotenv').config();
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
 
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+
 const Person = require('./models/person');
 const person = require('./models/person');
 
@@ -39,19 +42,24 @@ app.delete('/api/persons/:id', (req, res, next) => {
     .catch(error => next(error));
 });
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
   const body = req.body;
 
-  if (!body.name || !body.number) 
+  if (!body.name || !body.number) {
     return res.status(400).json({error: 'no empty fields'});
+  }
 
   const person = new Person({
     name: body.name, 
     number: body.number
   });
 
-  person.save().then(result => console.log('person ' + result.name + ' saved in MongoDB'));
-  res.send(person);
+  person.save()
+    .then(result => {
+      console.log('person ' + result.name + ' saved in MongoDB');
+      res.send(result);
+    })
+    .catch(error => next(error));
 });
 
 app.put('/api/persons/:id', (req, res, next) => {
@@ -71,12 +79,19 @@ const unkownEntry = (req, res) => {
 }
 
 const handlerError = (error, req, res, next) => {
-  res.status(400).send({ error: 'error' });
+  console.log(error.message);
+  
+  if (error.name === 'ValidationError') {
+    res.status(400).send(error.message);
+  } else {
+    res.status(400).send({ error: 'error' });
+  }
+  next(error);
 };
 
 app.use(handlerError);
 app.use(unkownEntry);
 
 app.listen(PORT, () => {
-  console.log('Server running');
+  console.log('Server running on PORT ' + PORT);
 });
